@@ -18,7 +18,7 @@ pipeline {
   environment {
     GIT_CREDENTIALS = 'github-creds'       // set this credential in Jenkins
     DOCKER_CREDENTIALS = 'dockerhub-creds' // set this credential in Jenkins if pushing
-    SMTP_RECIPIENT = 'team@example.com'    // change to real recipient
+    SMTP_RECIPIENT = 'billelzemmel2@gmail.com'    // change to real recipient
     // BUILD_VERSION, GIT_COMMIT, DOCKER_IMAGE will be set after checkout
   }
 
@@ -43,12 +43,12 @@ pipeline {
     }
 
     stage('Build') {
+      tools {
+        maven 'maven3'
+      }
       steps {
         echo "Maven build (skip tests to allow parallel test stage)..."
         sh 'mvn -B -e -q clean package -DskipTests=true'
-      }
-      post {
-        success { echo "Build completed" }
       }
     }
 
