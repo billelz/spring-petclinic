@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'maven3'
+        jdk 'jdk25'
+    }
+
     parameters {
         string(name: 'BRANCH', defaultValue: 'main', description: 'Git branch to build')
         choice(name: 'DEPLOY_ENV', choices: ['none', 'staging', 'production'], description: 'Deployment environment')
