@@ -1,7 +1,10 @@
 // Jenkinsfile - Advanced Jenkins Exercise (Declarative)
 pipeline {
   agent any
-
+  tools {
+    jdk 'jdk25'
+    maven 'maven3'
+  }
   options {
     buildDiscarder(logRotator(numToKeepStr: '30'))
     timestamps()
