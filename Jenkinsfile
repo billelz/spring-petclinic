@@ -37,24 +37,26 @@ pipeline {
         }
 
         stage('Parallel Testing') {
-            parallel failFast: false, 
-            'Unit Tests': {
+            parallel {
                 stage('Unit Tests') {
-                    sh 'mvn test -Dgroups=unit'
+                    steps {
+                        sh 'mvn test -Dgroups=unit'
+                    }
                 }
-            },
-            'Integration Tests (if Docker available)': {
                 stage('Integration Tests (if Docker available)') {
-                    script {
-                        if (sh(script: 'docker ps', returnStatus: true) == 0) {
-                            sh 'mvn test -Dgroups=integration'
-                        } else {
-                            echo "⚠️ Docker not available — skipping integration tests"
+                    steps {
+                        script {
+                            if (sh(script: 'docker ps', returnStatus: true) == 0) {
+                                sh 'mvn test -Dgroups=integration'
+                            } else {
+                                echo "⚠️ Docker not available — skipping integration tests"
+                            }
                         }
                     }
                 }
             }
         }
+
 
         stage('Docker Image Build') {
             steps {
