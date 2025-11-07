@@ -37,24 +37,19 @@ pipeline {
         }
 
         stage('Parallel Testing') {
-            parallel {
+            parallel failFast: false, 
+            'Unit Tests': {
                 stage('Unit Tests') {
-                    steps {
-                        sh 'mvn test -Dgroups="unit" || echo "Unit tests failed"'
-                        junit '**/target/surefire-reports/*.xml'
-                    }
+                    sh 'mvn test -Dgroups=unit'
                 }
+            },
+            'Integration Tests (if Docker available)': {
                 stage('Integration Tests (if Docker available)') {
-                    steps {
-                        script {
-                            // Check if Docker is available
-                            def dockerAvailable = sh(script: 'docker ps > /dev/null 2>&1', returnStatus: true) == 0
-                            if (dockerAvailable) {
-                                echo "✅ Docker detected — running integration tests with Testcontainers"
-                                sh 'mvn verify -Dgroups="integration"'
-                            } else {
-                                echo "⚠️ Docker not available — skipping Testcontainers integration tests"
-                            }
+                    script {
+                        if (sh(script: 'docker ps', returnStatus: true) == 0) {
+                            sh 'mvn test -Dgroups=integration'
+                        } else {
+                            echo "⚠️ Docker not available — skipping integration tests"
                         }
                     }
                 }
